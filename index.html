@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Three js terrain</title>
+    <style>
+        body { margin: 0; }
+    </style>
+</head>
+<body>
+<script src="./js/three/three.js"></script>
+<script>
+
+  const scene = new THREE.Scene();
+
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+  camera.lookAt(0, 0, 0);
+  camera.position.set(10, 10, 100);
+
+  // axes
+  const axes = new THREE.AxesHelper(500);
+  scene.add(axes);
+
+  const renderer = new THREE.WebGL1Renderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  const geometry = new THREE.BoxGeometry(10, 10, 10);
+  const material = new THREE.MeshBasicMaterial({
+    color: '#38ab61'
+  });
+  const cube = new THREE.Mesh(geometry, material);
+  // cube.rotation.x = 0;
+  // cube.rotation.z = 45;
+  scene.add(cube);
+
+  // line
+  const lineMaterial = new THREE.LineBasicMaterial({color: '#ff7777'})
+  const points = [];
+  points.push( new THREE.Vector3( - 10, 0, 0 ) );
+  points.push( new THREE.Vector3( 0, 10, 0 ) );
+  points.push( new THREE.Vector3( 10, 0, 0 ) );
+
+  const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
+  const line = new THREE.Line(lineGeometry, lineMaterial);
+
+  scene.add(line);
+
+
+  function animate() {
+    requestAnimationFrame(animate);
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+</script>
+</body>
+</html>
