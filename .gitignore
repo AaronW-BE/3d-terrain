@@ -5,3 +5,7 @@
 
 dist/
 target/
+
+node_modules/
+
+.parcel-cache
