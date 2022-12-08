@@ -12,46 +12,114 @@
 <script src="./js/three/three.js"></script>
 <script>
 
+  function generateTerrainPoints(hCount, vCount, l) {
+    const pointsCount = hCount * vCount * 9;
+    let points = new Float32Array(pointsCount);
+    let normals = new Float32Array(pointsCount);
+    let colors = new Float32Array(pointsCount);
+
+    let i = -1;
+    for (let row = 0; row < vCount; row++) {
+      for (let col = 0; col < hCount; col++) {
+        let ax = col * l,   ay = 0,     az = row * l;
+        let bx = ax + l,    by = 0,     bz = az;
+        let cx = ax,        cy = 0,     cz = az + l;
+
+        points[++i] = ax;
+        points[++i] = ay;
+        points[++i] = az;
+
+        points[++i] = bx;
+        points[++i] = by;
+        points[++i] = bz;
+
+        points[++i] = cx;
+        points[++i] = cy;
+        points[++i] = cz;
+      }
+
+    }
+    console.log(i);
+
+
+    console.log(points);
+
+    return points;
+  }
+
+  let p = generateTerrainPoints(100, 100, 10);
+
   const scene = new THREE.Scene();
+  {
+    scene.fog = new THREE.Fog(0x777777, 500, 500);
+    scene.background = new THREE.Color(0x2777ff)
+  }
+
+  const renderer = new THREE.WebGL1Renderer();
+  {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+  }
 
   const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
   camera.lookAt(0, 0, 0);
-  camera.position.set(10, 10, 100);
+  camera.position.set(30, 30, 150);
+
+  {
+    const light = new THREE.DirectionalLight(0xffff77, 0.8);
+    light.position.set(0, 50, 0);
+    const helper = new THREE.DirectionalLightHelper( light, 5 );
+    scene.add(helper)
+  }
+
+
+  { // plane
+    // const plane = new THREE.Plane(new THREE.Vector3(100, 0, 0), 0);
+    // scene.add(plane);
+
+    let geo = new THREE.PlaneBufferGeometry(100, 100, 8, 8);
+    let mat = new THREE.MeshBasicMaterial({ color: 0x333300, side: THREE.DoubleSide });
+    let plane = new THREE.Mesh(geo, mat);
+    plane.rotateX(-Math.PI / 2);
+
+    scene.add(plane);
+  }
 
   // axes
   const axes = new THREE.AxesHelper(500);
   scene.add(axes);
 
-  const renderer = new THREE.WebGL1Renderer();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.body.appendChild(renderer.domElement);
+  let grid = new THREE.GridHelper(100, 100);
+  grid.material.opacity = 0.4;
+  grid.material.transparent = true;
+  scene.add(grid);
 
-  const geometry = new THREE.BoxGeometry(10, 10, 10);
-  const material = new THREE.MeshBasicMaterial({
-    color: '#38ab61'
-  });
-  const cube = new THREE.Mesh(geometry, material);
-  // cube.rotation.x = 0;
-  // cube.rotation.z = 45;
-  scene.add(cube);
 
-  // line
-  const lineMaterial = new THREE.LineBasicMaterial({color: '#ff7777'})
-  const points = [];
-  points.push( new THREE.Vector3( - 10, 0, 0 ) );
-  points.push( new THREE.Vector3( 0, 10, 0 ) );
-  points.push( new THREE.Vector3( 10, 0, 0 ) );
 
-  const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
-  const line = new THREE.Line(lineGeometry, lineMaterial);
+  {
+    let geometry = new THREE.BufferGeometry();
+    let points = new Float32Array([
+      50, 10, 0,
+      0, 0, 50,
+      -50, 0, 0,
+      50, 0, 50,
+    ]);
+    geometry.attributes.position = new THREE.BufferAttribute(points, 3);
 
-  scene.add(line);
+    let material = new THREE.MeshBasicMaterial({
+      color: 0x33ff77,
+      side: THREE.DoubleSide
+    })
+    let mesh = new THREE.Mesh(geometry, material);
+
+    scene.add(mesh);
+  }
+
+
 
 
   function animate() {
     requestAnimationFrame(animate);
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
 
     renderer.render(scene, camera);
   }
