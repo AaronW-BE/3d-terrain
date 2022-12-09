@@ -1,6 +1,11 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import * as dat from 'dat.gui';
+import Stats from 'stats.js';
+
+let stats = new Stats();
+stats.showPanel(1);
+document.body.appendChild( stats.dom );
 
 const renderer = new THREE.WebGL1Renderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -74,7 +79,7 @@ let mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
 const boxGeometry = new THREE.BoxGeometry(50, 50, 50);
-const boxMaterial = new THREE.MeshStandardMaterial({color: '#8dff74'});
+const boxMaterial = new THREE.MeshBasicMaterial({color: '#8dff74'});
 const box = new THREE.Mesh(boxGeometry, boxMaterial);
 box.position.set(100, 0, 0);
 scene.add(box)
@@ -83,7 +88,8 @@ scene.add(box)
 const gui = new dat.GUI();
 const guiOptions = {
   sphereColor: '#ffffff',
-  wireframe: false
+  wireframe: false,
+  showGrid: true
 };
 gui.addColor(guiOptions, 'sphereColor').onChange(e => {
   sphere.material.color.set(e);
@@ -92,8 +98,10 @@ gui.addColor(guiOptions, 'sphereColor').onChange(e => {
 gui.add(guiOptions, 'wireframe').onChange(e => {
   sphere.material.wireframe = e;
 });
+gui.add(guiOptions, 'showGrid').onChange(e => grid.visible = e);
 
 function animate(time) {
+  stats.begin();
 
   mesh.rotation.x = time / 1000;
   mesh.rotation.y = time / 1000;
@@ -104,6 +112,7 @@ function animate(time) {
   box.position.setZ(Math.abs(Math.sin(time / 1000)) * 200)
 
   renderer.render(scene, camera);
+  stats.end();
 }
 
 renderer.setAnimationLoop(animate)

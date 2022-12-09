@@ -20,6 +20,7 @@
   "homepage": "https://github.com/AaronW-BE/3d-terrain#readme",
   "dependencies": {
     "dat.gui": "^0.7.9",
+    "stats.js": "^0.17.0",
     "three": "^0.147.0"
   },
   "devDependencies": {
